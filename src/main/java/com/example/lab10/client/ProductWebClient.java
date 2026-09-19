@@ -55,66 +55,65 @@ public class ProductWebClient {
      *         .bodyToFlux(Product.class)
      */
     public Flux<Product> getAllProducts() {
-        // TODO: เติม code ตรงนี้
-        return null; // ← แก้บรรทัดนี้
+        return client.get()
+                .uri("/products")
+                .retrieve()
+                .bodyToFlux(Product.class);
     }
 
     /**
      * POST /products → Mono<Product>
-     * TODO: ส่ง Product ใหม่ไปยัง server
-     *
-     * Hint: client.post()
-     *         .uri("/products")
-     *         .bodyValue(product)   ← ส่ง body
-     *         .retrieve()
-     *         .bodyToMono(Product.class)
+     * ส่ง Product ใหม่ไปยัง server ด้วย .bodyValue()
+     * .bodyValue() ส่ง object เป็น JSON body โดยอัตโนมัติ
+     * คืน Mono<Product> จาก response body (non-blocking)
      */
     public Mono<Product> createProduct(Product product) {
-        // TODO: เติม code ตรงนี้
-        return null; // ← แก้บรรทัดนี้
+        return client.post()
+                .uri("/products")
+                .bodyValue(product)
+                .retrieve()
+                .bodyToMono(Product.class);
     }
 
     /**
      * DELETE /products/{id} → Mono<Void>
-     * TODO: ส่ง request ลบ Product
-     *
-     * Hint: client.delete()
-     *         .uri("/products/{id}", id)
-     *         .retrieve()
-     *         .bodyToMono(Void.class)
+     * ส่ง DELETE request แล้วคืน Mono<Void>
+     * Mono<Void> = completion signal ว่า server ลบสำเร็จ
      */
     public Mono<Void> deleteProduct(String id) {
-        // TODO: เติม code ตรงนี้
-        return null; // ← แก้บรรทัดนี้
+        return client.delete()
+                .uri("/products/{id}", id)
+                .retrieve()
+                .bodyToMono(Void.class);
     }
 
     /**
      * GET /products/category/{category} → Flux<Product>
-     * TODO: ดึง Product ตาม category
-     *
-     * Hint: client.get()
-     *         .uri("/products/category/{category}", category)
-     *         .retrieve()
-     *         .bodyToFlux(Product.class)
+     * ดึง Product ตาม category ด้วย bodyToFlux()
+     * Flux ส่ง element ออกทีละรายการ non-blocking (Reactive Streams backpressure)
      */
     public Flux<Product> getByCategory(String category) {
-        // TODO: เติม code ตรงนี้
-        return null; // ← แก้บรรทัดนี้
+        return client.get()
+                .uri("/products/category/{category}", category)
+                .retrieve()
+                .bodyToFlux(Product.class);
     }
 
     /**
      * GET /products/{id}/price → Mono<Double>
-     * TODO: ดึงราคาหลังส่วนลด
-     *       แล้ว chain .doOnNext() เพื่อ log ราคาที่ได้
-     *
-     * Hint: client.get()
-     *         .uri("/products/{id}/price", id)
-     *         .retrieve()
-     *         .bodyToMono(Double.class)
-     *         .doOnNext(price -> System.out.println("Price: " + price))
+     * ดึงราคาหลังส่วนลด แล้ว chain .doOnNext() เพื่อ log ราคา
+     * .doOnNext() = side-effect operator ไม่เปลี่ยนแปลงค่า
+     * ตามด้วย .map() เพื่อแปลงค่า และ .defaultIfEmpty() เป็น fallback
      */
     public Mono<Double> getDiscountedPrice(String id) {
-        // TODO: เติม code ตรงนี้
-        return null; // ← แก้บรรทัดนี้
+        return client.get()
+                .uri("/products/{id}/price", id)
+                .retrieve()
+                .bodyToMono(Double.class)
+                .doOnNext(price -> System.out.println(
+                        "[WebClient] Discounted price for id=" + id + " → " + price))
+                .map(price -> price)
+                .defaultIfEmpty(0.0);
     }
 }
+

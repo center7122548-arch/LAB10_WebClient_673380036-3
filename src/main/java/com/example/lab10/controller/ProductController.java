@@ -60,60 +60,57 @@ public class ProductController {
      */
     @GetMapping
     public Flux<Product> getAll() {
-        // TODO: เติม code ตรงนี้
-        return null; // ← แก้บรรทัดนี้
+        return service.getAll();
     }
 
     /**
      * POST /products
-     * TODO: รับ Product จาก request body แล้วบันทึก
+     * รับ Product จาก request body แล้วบันทึกผ่าน service.save()
+     * ถ้าไม่มี id → UUID ถูก generate อัตโนมัติใน Service layer
+     * คืน Mono<Product> ที่บันทึกแล้ว (non-blocking)
      *
-     * Hint: เรียก service.save(product)
      * ทดสอบ: POST http://localhost:8080/products
      *        Body: { "name": "...", "price": 999.0, ... }
      */
     @PostMapping
     public Mono<Product> save(@RequestBody Product product) {
-        // TODO: เติม code ตรงนี้
-        return null; // ← แก้บรรทัดนี้
+        return service.save(product);
     }
 
     /**
      * DELETE /products/{id}
-     * TODO: ลบ Product และคืน Mono<Void>
+     * ลบ Product และคืน Mono<Void>
+     * Mono<Void> = completion signal ไม่มี response body
      *
-     * Hint: เรียก service.delete(id)
      * ทดสอบ: DELETE http://localhost:8080/products/1
      */
     @DeleteMapping("/{id}")
     public Mono<Void> delete(@PathVariable String id) {
-        // TODO: เติม code ตรงนี้
-        return null; // ← แก้บรรทัดนี้
+        return service.delete(id);
     }
 
     /**
      * GET /products/category/{category}
-     * TODO: คืน Flux<Product> ที่กรองตาม category
+     * คืน Flux<Product> ที่กรองตาม category (case-insensitive)
+     * ใช้ .filter() operator ภายใน Service/Repository layer
      *
-     * Hint: เรียก service.getByCategory(category)
      * ทดสอบ: GET http://localhost:8080/products/category/Electronics
      */
     @GetMapping("/category/{category}")
     public Flux<Product> getByCategory(@PathVariable String category) {
-        // TODO: เติม code ตรงนี้
-        return null; // ← แก้บรรทัดนี้
+        return service.getByCategory(category);
     }
 
     /**
      * GET /products/{id}/price
-     * TODO: คืน Mono<Double> ราคาหลังส่วนลด
+     * คืน Mono<Double> ราคาหลังส่วนลด
+     * ใช้ .map() operator แปลง Product → discountedPrice ใน pipeline
      *
-     * Hint: เรียก service.getDiscountedPrice(id)
      * ทดสอบ: GET http://localhost:8080/products/1/price
      */
     @GetMapping("/{id}/price")
     public Mono<Double> getDiscountedPrice(@PathVariable String id) {
-        // TODO: เติม code ตรงนี้
-        return null; // ← แก้บรรทัดนี้
+        return service.getDiscountedPrice(id);
     }
 }
+

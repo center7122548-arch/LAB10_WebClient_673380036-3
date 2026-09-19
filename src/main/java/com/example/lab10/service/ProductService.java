@@ -40,58 +40,58 @@ public class ProductService {
      *       .switchIfEmpty(Mono.error(new RuntimeException(...)))
      */
     public Mono<Product> getById(String id) {
-        // TODO: เติม code ตรงนี้
-        return null; // ← แก้บรรทัดนี้
+        return repository.findById(id)
+                .switchIfEmpty(Mono.error(new RuntimeException("Product not found: " + id)));
     }
 
     // ── 2. ดึง Product ทั้งหมด ───────────────────────────
     /**
-     * TODO: เรียก repository.findAll() แล้วคืนผล
+     * เรียก repository.findAll() แล้วคืนผลเป็น Flux<Product>
+     * ทุก element ถูกส่งออกแบบ non-blocking (Reactive Streams)
      */
     public Flux<Product> getAll() {
-        // TODO: เติม code ตรงนี้
-        return null; // ← แก้บรรทัดนี้
+        return repository.findAll();
     }
 
     // ── 3. บันทึก Product ────────────────────────────────
     /**
-     * TODO: เรียก repository.save(product) แล้วคืนผล
-     *
-     * เพิ่มเติม: ถ้า product.getId() เป็น null ให้ generate id ใหม่
-     * Hint: java.util.UUID.randomUUID().toString()
+     * ถ้า id เป็น null → generate UUID ใหม่ด้วย UUID.randomUUID()
+     * จากนั้นใช้ flatMap เพื่อ chain การ save แบบ async
      */
     public Mono<Product> save(Product product) {
-        // TODO: เติม code ตรงนี้
-        return null; // ← แก้บรรทัดนี้
+        if (product.getId() == null || product.getId().isBlank()) {
+            product.setId(java.util.UUID.randomUUID().toString());
+        }
+        return repository.save(product);
     }
 
     // ── 4. ลบ Product ────────────────────────────────────
     /**
-     * TODO: เรียก repository.deleteById(id) แล้วคืนผล
+     * เรียก repository.deleteById(id) แล้วคืน Mono<Void>
+     * Mono<Void> = signal ว่าสำเร็จโดยไม่มีค่า (complete event)
      */
     public Mono<Void> delete(String id) {
-        // TODO: เติม code ตรงนี้
-        return null; // ← แก้บรรทัดนี้
+        return repository.deleteById(id);
     }
 
     // ── 5. กรองตาม category ──────────────────────────────
     /**
-     * TODO: เรียก repository.findByCategory(category) แล้วคืนผล
+     * เรียก repository.findByCategory(category) ซึ่งใช้ .filter() ภายใน
+     * คืน Flux<Product> ที่ถูกกรองแบบ non-blocking
      */
     public Flux<Product> getByCategory(String category) {
-        // TODO: เติม code ตรงนี้
-        return null; // ← แก้บรรทัดนี้
+        return repository.findByCategory(category);
     }
 
     // ── 6. คำนวณราคาหลังส่วนลด ───────────────────────────
     /**
-     * TODO: หา Product จาก id แล้วคืน discountedPrice
-     *
-     * Hint: getById(id)
-     *       .map(p -> p.getDiscountedPrice())
+     * ใช้ .map() operator แปลง Product → Double (discounted price)
+     * .map() เป็น synchronous transform ใน reactive pipeline
+     * ไม่มี blocking: ทุกอย่างเกิดใน event loop thread
      */
     public Mono<Double> getDiscountedPrice(String id) {
-        // TODO: เติม code ตรงนี้
-        return null; // ← แก้บรรทัดนี้
+        return getById(id)
+                .map(p -> p.getDiscountedPrice());
     }
 }
+
